@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Phishing Detection using ML</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  
+  <link href="static/img/favicon.png" rel="icon">
+  <link href="static/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  
+  <link href="static/vendor/aos/aos.css" rel="stylesheet">
+  <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="static/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="static/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="static/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="static/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  
+  <link href="static/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Gp - v4.10.0
+  * Template URL: https://bootstrapmade.com/gp-free-multipurpose-html-bootstrap-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  
+  <header id="header" class="fixed-top ">
+    <div class="container d-flex align-items-center justify-content-lg-between">
+
+      <h1 class="logo me-auto me-lg-0"><a href="">Bot<span>.</span></a></h1>
+      
+      <nav id="navbar" class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <ul>
+          <li><a class="nav-link scrollto active" href="/">Home</a></li>
+          <li><a class="nav-link scrollto" href="/">About</a></li>
+
+          </li>
+          <li><a class="nav-link scrollto" href="/">Contact</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+
+      <a href="#about" class=""></a>
+
+    </div>
+  </header>
+
+  
+
+  <main id="main">
+
+    
+    <section id="features" class="features">
+      <div class="container" data-aos="fade-up">
+
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+    
+    <section id="about" class="about">
+      <div class="container mt-5 mb-5">
+        <h2 style="color:rgb(3, 104, 151); text-align:center; margin-bottom:30px;">🔒 URL-Based Phishing Detection</h2>
+        
+        <!-- URL INPUT SECTION -->
+        <div style="max-width:800px; margin:0 auto 30px; text-align:center;">
+          <div class="alert alert-warning" style="margin:0 0 20px 0;">
+            <h5>⚡ Quick Test: Paste a URL</h5>
+            <p>Paste a website URL and get an instant phishing prediction!</p>
+          </div>
+          
+          <div class="input-group mb-3" style="max-width:100%;">
+            <input type="text" id="urlInput" class="form-control form-control-lg" 
+                   placeholder="Paste URL here (e.g., https://google.com)" 
+                   style="font-size:1.1rem; padding:12px;">
+            <button class="btn btn-primary btn-lg" type="button" onclick="analyzeURL()" style="font-size:1.1rem;">
+              🔍 Analyze URL
+            </button>
+          </div>
+          
+          <div id="urlResultContainer" style="display:none; margin-bottom:30px;">
+            <div id="urlResultBox"></div>
+          </div>
+        </div>
+
+        <hr style="margin:30px 0;">
+        
+        <div class="alert alert-info" style="max-width:800px; margin:0 auto 30px;">
+          <h5>📋 Or Manually Enter Features:</h5>
+          <p><strong>Enter URL features (values: -1, 0, or 1):</strong> Each field represents a URL characteristic analyzed by the ML model.</p>
+          <ul style="margin-bottom:0;">
+            <li><strong>1</strong> = Feature indicates phishing</li>
+            <li><strong>0</strong> = Feature is uncertain/suspicious</li>
+            <li><strong>-1</strong> = Feature indicates legitimate</li>
+          </ul>
+        </div>
+
+        <!-- URL FEATURE EXTRACTION SECTION -->
+        <div style="max-width:800px; margin:0 auto 30px; text-align:center;">
+          <div class="alert alert-secondary" style="margin-bottom:15px;">
+            <h6 style="margin-bottom:10px;">🔗 Option 1: Auto-Extract Features from URL</h6>
+            <div class="input-group">
+              <input type="text" id="manualUrlInput" class="form-control" 
+                     placeholder="Paste URL here (e.g., google.com)" 
+                     style="font-size:0.95rem;">
+              <button class="btn btn-info" type="button" onclick="extractAndFillFeatures()">
+                📥 Extract & Fill
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:20px;">
+          <h6 style="margin-bottom:10px; color:#666;">🔹 Option 2: Load Sample Data</h6>
+          <button type="button" class="btn btn-success btn-sm" onclick="loadSampleData('safe')">📊 Load Safe Site Example</button>
+          <button type="button" class="btn btn-danger btn-sm ms-2" onclick="loadSampleData('phishing')">⚠️ Load Phishing Example</button>
+        </div>
+
+        <form method="post" action="/output" id="phishingForm">
+          <div class="row" style="max-width:1000px; margin:0 auto;">
+            <div class="col-md-4 mb-3">
+              <label><b>UsingIP</b> <small class="text-muted">(IP vs Domain)</small></label>
+              <input type="number" name="UsingIP" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>PrefixSuffix-</b> <small class="text-muted">(Dash in domain)</small></label>
+              <input type="number" name="PrefixSuffix-" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>SubDomains</b> <small class="text-muted">(Multiple subdomains)</small></label>
+              <input type="number" name="SubDomains" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>HTTPS</b> <small class="text-muted">(Uses HTTPS)</small></label>
+              <input type="number" name="HTTPS" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>NonStdPort</b> <small class="text-muted">(Non-standard port)</small></label>
+              <input type="number" name="NonStdPort" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>HTTPSDomainURL</b> <small class="text-muted">(HTTPS in domain)</small></label>
+              <input type="number" name="HTTPSDomainURL" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>RequestURL</b> <small class="text-muted">(Request URLs)</small></label>
+              <input type="number" name="RequestURL" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>AnchorURL</b> <small class="text-muted">(Anchor URLs)</small></label>
+              <input type="number" name="AnchorURL" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>LinksInScriptTags</b> <small class="text-muted">(Links in scripts)</small></label>
+              <input type="number" name="LinksInScriptTags" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>ServerFormHandler</b> <small class="text-muted">(Form handler)</small></label>
+              <input type="number" name="ServerFormHandler" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>InfoEmail</b> <small class="text-muted">(Email info)</small></label>
+              <input type="number" name="InfoEmail" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>AbnormalURL</b> <small class="text-muted">(Abnormal URL)</small></label>
+              <input type="number" name="AbnormalURL" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>WebsiteForwarding</b> <small class="text-muted">(URL forwarding)</small></label>
+              <input type="number" name="WebsiteForwarding" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>StatusBarCust</b> <small class="text-muted">(Status bar)</small></label>
+              <input type="number" name="StatusBarCust" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>DisableRightClick</b> <small class="text-muted">(Right-click disabled)</small></label>
+              <input type="number" name="DisableRightClick" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>AgeofDomain</b> <small class="text-muted">(Domain age)</small></label>
+              <input type="number" name="AgeofDomain" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>DNSRecording</b> <small class="text-muted">(DNS record)</small></label>
+              <input type="number" name="DNSRecording" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>WebsiteTraffic</b> <small class="text-muted">(Traffic level)</small></label>
+              <input type="number" name="WebsiteTraffic" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>PageRank</b> <small class="text-muted">(PageRank score)</small></label>
+              <input type="number" name="PageRank" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>GoogleIndex</b> <small class="text-muted">(Google indexed)</small></label>
+              <input type="number" name="GoogleIndex" class="form-control" min="-1" max="1" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label><b>StatsReport</b> <small class="text-muted">(StatsReport)</small></label>
+              <input type="number" name="StatsReport" class="form-control" min="-1" max="1" required>
+            </div>
+          </div>
+
+          <div style="text-align:center; margin-top:30px;">
+            <button type="submit" class="btn btn-success btn-lg">🔍 Predict</button>
+            <button type="reset" class="btn btn-secondary btn-lg ms-2">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <script>
+        // Analyze URL and get instant prediction
+        function analyzeURL() {
+          const urlInput = document.getElementById('urlInput').value.trim();
+          
+          if (!urlInput) {
+            alert('⚠️ Please enter a URL');
+            return;
+          }
+          
+          // Show loading
+          const resultContainer = document.getElementById('urlResultContainer');
+          const resultBox = document.getElementById('urlResultBox');
+          resultBox.innerHTML = '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>';
+          resultContainer.style.display = 'block';
+          
+          // Send to backend
+          fetch('/analyze_url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: urlInput })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              resultBox.innerHTML = `
+                <div class="alert alert-danger">
+                  <h5>❌ Error</h5>
+                  <p>${data.error}</p>
+                </div>
+              `;
+            } else {
+              const prediction = data.prediction;
+              let alertClass, icon, message, bgColor;
+              
+              if (prediction === 'Safe') {
+                alertClass = 'alert alert-success';
+                icon = '✅';
+                message = 'This URL appears to be SAFE and legitimate!';
+                bgColor = '#d4edda';
+              } else if (prediction === 'Not Safe') {
+                alertClass = 'alert alert-danger';
+                icon = '⚠️';
+                message = 'This URL appears to be PHISHING! Do not click or enter credentials.';
+                bgColor = '#f8d7da';
+              } else {
+                alertClass = 'alert alert-warning';
+                icon = '⚡';
+                message = 'This URL is SUSPICIOUS. Exercise caution!';
+                bgColor = '#fff3cd';
+              }
+              
+              resultBox.innerHTML = `
+                <div class="${alertClass}" style="font-size:1.05rem; padding:20px; border-left:5px solid;">
+                  <h4 style="margin:0 0 10px 0;">${icon} Prediction: ${prediction.toUpperCase()}</h4>
+                  <p style="margin:0 0 15px 0;"><strong>URL:</strong> ${data.url}</p>
+                  <p style="margin:0;">${message}</p>
+                </div>
+              `;
+            }
+          })
+          .catch(error => {
+            resultBox.innerHTML = `
+              <div class="alert alert-danger">
+                <h5>❌ Connection Error</h5>
+                <p>Could not connect to server. Make sure Flask is running.</p>
+              </div>
+            `;
+          });
+        }
+        
+        // Allow Enter key to analyze
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') analyzeURL();
+        });
+        
+        // Extract features from URL and auto-fill form fields
+        function extractAndFillFeatures() {
+          const urlInput = document.getElementById('manualUrlInput').value.trim();
+          
+          if (!urlInput) {
+            alert('⚠️ Please enter a URL');
+            return;
+          }
+          
+          // Show loading
+          const btn = event.target;
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '⏳ Extracting...';
+          btn.disabled = true;
+          
+          // Send to backend
+          fetch('/analyze_url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: urlInput })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              alert('❌ Error: ' + data.error);
+            } else {
+              // Extract features from response
+              const features = data.features;
+              
+              // Map feature names to form field names
+              const featureMap = {
+                'UsingIP': features.UsingIP,
+                'PrefixSuffix-': features['PrefixSuffix-'],
+                'SubDomains': features.SubDomains,
+                'HTTPS': features.HTTPS,
+                'NonStdPort': features.NonStdPort,
+                'HTTPSDomainURL': features.HTTPSDomainURL,
+                'RequestURL': features.RequestURL,
+                'AnchorURL': features.AnchorURL,
+                'LinksInScriptTags': features.LinksInScriptTags,
+                'ServerFormHandler': features.ServerFormHandler,
+                'InfoEmail': features.InfoEmail,
+                'AbnormalURL': features.AbnormalURL,
+                'WebsiteForwarding': features.WebsiteForwarding,
+                'StatusBarCust': features.StatusBarCust,
+                'DisableRightClick': features.DisableRightClick,
+                'AgeofDomain': features.AgeofDomain,
+                'DNSRecording': features.DNSRecording,
+                'WebsiteTraffic': features.WebsiteTraffic,
+                'PageRank': features.PageRank,
+                'GoogleIndex': features.GoogleIndex,
+                'StatsReport': features.StatsReport
+              };
+              
+              // Fill form fields
+              for (const [fieldName, fieldValue] of Object.entries(featureMap)) {
+                const input = document.querySelector(`input[name="${fieldName}"]`);
+                if (input) {
+                  input.value = fieldValue;
+                }
+              }
+              
+              alert('✅ Features extracted and filled!\n\nURL: ' + data.url + '\nClick "Predict" to get the result.');
+              
+              // Scroll to form
+              document.getElementById('phishingForm').scrollIntoView({ behavior: 'smooth' });
+            }
+          })
+          .catch(error => {
+            alert('❌ Error connecting to server. Make sure Flask is running.');
+            console.error('Error:', error);
+          })
+          .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          });
+        }
+        
+        // Allow Enter key in manual URL input
+        document.getElementById('manualUrlInput').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') extractAndFillFeatures();
+        });
+        
+        function loadSampleData(type = 'safe') {
+          let sampleData;
+          
+          if (type === 'safe') {
+            // Real legitimate website sample from training data
+            sampleData = {
+              'UsingIP': 1, 'PrefixSuffix-': -1, 'SubDomains': -1, 'HTTPS': 1,
+              'NonStdPort': 1, 'HTTPSDomainURL': -1, 'RequestURL': -1, 'AnchorURL': 0,
+              'LinksInScriptTags': -1, 'ServerFormHandler': -1, 'InfoEmail': -1, 'AbnormalURL': -1,
+              'WebsiteForwarding': 0, 'StatusBarCust': 1, 'DisableRightClick': 1,
+              'AgeofDomain': 1, 'DNSRecording': -1, 'WebsiteTraffic': -1,
+              'PageRank': 1, 'GoogleIndex': 1, 'StatsReport': -1
+            };
+          } else {
+            // Real phishing website sample from training data
+            sampleData = {
+              'UsingIP': 1, 'PrefixSuffix-': -1, 'SubDomains': -1, 'HTTPS': 1,
+              'NonStdPort': 1, 'HTTPSDomainURL': 1, 'RequestURL': 1, 'AnchorURL': 0,
+              'LinksInScriptTags': 1, 'ServerFormHandler': -1, 'InfoEmail': 1, 'AbnormalURL': 1,
+              'WebsiteForwarding': 0, 'StatusBarCust': 1, 'DisableRightClick': 1,
+              'AgeofDomain': 1, 'DNSRecording': -1, 'WebsiteTraffic': 0,
+              'PageRank': -1, 'GoogleIndex': 1, 'StatsReport': 1
+            };
+          }
+          
+          for (const [key, value] of Object.entries(sampleData)) {
+            const input = document.querySelector(`input[name="${key}"]`);
+            if (input) input.value = value;
+          }
+          const message = type === 'safe' ? '✓ Legitimate site example loaded!' : '⚠️ Phishing site example loaded!';
+          alert(message + '\n\nClick "Predict" to test.');
+        }
+      </script>
+    </section>
+
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+   
+
+  </main>
+
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  
+  <script src="static/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="static/vendor/aos/aos.js"></script>
+  <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="static/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="static/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="static/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="static/vendor/php-email-form/validate.js"></script>
+
+  
+  <script src="static/js/main.js"></script>
+
+</body>
+
+</html>
