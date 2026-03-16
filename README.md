@@ -112,4 +112,3 @@ For questions or suggestions, please open an issue on GitHub.
 
 ---
 
-**Note**: This tool is for educational purposes and should not be used as the sole method for phishing detection. Always exercise caution and use multiple security measures.
