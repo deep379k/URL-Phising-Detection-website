@@ -47,6 +47,8 @@ export default function UrlScanner() {
   }
 
   const phishing = result?.prediction === "Potential Phishing";
+  const unverified = result?.prediction === "Unverified Domain";
+  const caution = phishing || unverified;
   return <main className="scanner-page url-scanner section-wrap">
     <div className="page-heading"><p className="eyebrow">URL INTELLIGENCE</p><h1>Inspect a suspicious link</h1><p>Enter a complete URL or domain. PhishGuard analyzes its structure without visiting the page.</p></div>
     <section className="scanner-card">
@@ -58,13 +60,13 @@ export default function UrlScanner() {
       {error && <div className="form-error"><AlertTriangle /> <div><strong>Unable to analyze this URL</strong><span>{error}</span></div></div>}
     </section>
 
-    {result && <section className={`result-card ${phishing ? "result-danger" : "result-safe"}`}>
+    {result && <section className={`result-card ${phishing ? "result-danger" : unverified ? "result-warning" : "result-safe"}`}>
       <div className="result-summary">
-        <span className="result-icon">{phishing ? <ShieldAlert /> : <CheckCircle2 />}</span>
-        <div><p className="eyebrow">ANALYSIS COMPLETE</p><h2>{result.prediction}</h2><p>{phishing ? "This URL contains signals that warrant additional verification." : "The model did not identify strong phishing evidence in this URL."}</p></div>
+        <span className="result-icon">{caution ? <ShieldAlert /> : <CheckCircle2 />}</span>
+        <div><p className="eyebrow">ANALYSIS COMPLETE</p><h2>{result.prediction}</h2><p>{phishing ? "This URL contains signals that warrant additional verification." : unverified ? "No strong phishing pattern was found, but this domain has not been verified as legitimate." : "This recognized official domain has no strong phishing indicators."}</p></div>
         <span className={`risk-badge ${result.risk_level.toLowerCase()}`}>{result.risk_level} risk</span>
       </div>
-      <div className="result-meta"><div><span>Analysis source</span><strong>{result.analysis_source === "security-rule" ? "Security safeguard" : result.model_name}</strong></div><div><span>Model phishing probability</span><strong>{result.model_phishing_probability}%</strong></div><div><span>Stored in history</span><strong>{result.stored ? "Yes" : "Database not configured"}</strong></div></div>
+      <div className="result-meta"><div><span>Analysis source</span><strong>{result.analysis_source === "security-rule" ? "Security safeguard" : result.analysis_source === "verification-policy" ? "Domain verification policy" : result.model_name}</strong></div><div><span>Model phishing probability</span><strong>{result.model_phishing_probability}%</strong></div><div><span>Stored in history</span><strong>{result.stored ? "Yes" : "Database not configured"}</strong></div></div>
       <div className="analyzed-url"><ExternalLink size={16} /><span>{result.url}</span></div>
       <div className="indicator-section"><h3>Detected indicators</h3>{result.indicators.length ? <div className="indicator-list">{result.indicators.map(item => <div key={item.feature}><AlertTriangle /><span>{item.message}</span><ChevronRight /></div>)}</div> : <div className="no-indicators"><CheckCircle2 /> No negative structural indicators were detected.</div>}</div>
       <p className="disclaimer">{result.disclaimer} Always verify sensitive requests through official channels.</p>

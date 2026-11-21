@@ -57,6 +57,24 @@ class URLAPITests(unittest.TestCase):
         self.assertEqual(body["analysis_source"], "security-rule")
         self.assertEqual(body["indicators"][0]["feature"], "BrandLookalike")
 
+    def test_https_word_in_insecure_hostname_is_phishing(self):
+        response = self.client.post("/api/predict/url", json={"url": "https.abess.cc"})
+        body = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body["prediction"], "Potential Phishing")
+        self.assertEqual(body["risk_level"], "High")
+        self.assertEqual(body["analysis_source"], "security-rule")
+        self.assertIn("HTTPSDomainURL", [item["feature"] for item in body["indicators"]])
+
+    def test_unknown_clean_domain_is_not_called_legitimate(self):
+        response = self.client.post("/api/predict/url", json={"url": "hukufehkusj.com"})
+        body = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(body["prediction"], "Unverified Domain")
+        self.assertEqual(body["risk_level"], "Medium")
+        self.assertEqual(body["analysis_source"], "verification-policy")
+        self.assertIn("UnverifiedDomain", [item["feature"] for item in body["indicators"]])
+
     def test_official_brand_domain_is_not_lookalike(self):
         response = self.client.post(
             "/api/predict/url", json={"url": "https://www.google.com"}

@@ -63,6 +63,15 @@ def _is_official_hostname(hostname: str, official_domains: set[str]) -> bool:
     return any(hostname == domain or hostname.endswith(f".{domain}") for domain in official_domains)
 
 
+def is_recognized_official_domain(url: str) -> bool:
+    """Return whether the hostname belongs to the deliberately maintained trust list."""
+    hostname = (urlsplit(url).hostname or "").lower().rstrip(".")
+    return any(
+        _is_official_hostname(hostname, official_domains)
+        for official_domains in TRUSTED_BRAND_DOMAINS.values()
+    )
+
+
 def detect_brand_lookalike(url: str) -> str | None:
     """Return an impersonated brand when the hostname closely resembles it."""
     hostname = (urlsplit(url).hostname or "").lower().rstrip(".")
@@ -104,14 +113,27 @@ class URLPredictionService:
         critical_rule = features["UsingIP"] == -1 and (
             features["HTTPS"] == -1 or features["NonStdPort"] == -1
         )
+        deceptive_hostname_rule = features["HTTPSDomainURL"] == -1
+        strong_signal_names = (
+            "UsingIP", "ShortURL", "Symbol@", "Redirecting//", "NonStdPort",
+            "HTTPSDomainURL", "PrefixSuffix-", "SubDomains",
+        )
+        strong_signal_count = sum(features[name] == -1 for name in strong_signal_names)
+        combined_signal_rule = features["HTTPS"] == -1 and strong_signal_count >= 1
         impersonated_brand = detect_brand_lookalike(normalized)
-        security_rule = critical_rule or impersonated_brand is not None
+        recognized_official = is_recognized_official_domain(normalized)
+        security_rule = (
+            critical_rule
+            or deceptive_hostname_rule
+            or combined_signal_rule
+            or impersonated_brand is not None
+        )
 
         if security_rule:
             risk_level = "High"
         elif phishing_probability >= 0.65:
             risk_level = "High"
-        elif phishing_probability >= 0.40:
+        elif phishing_probability >= 0.40 or not recognized_official:
             risk_level = "Medium"
         else:
             risk_level = "Low"
@@ -130,8 +152,29 @@ class URLPredictionService:
                 ),
             })
 
+        if not recognized_official and not security_rule and predicted_class != -1:
+            indicators.insert(0, {
+                "feature": "UnverifiedDomain",
+                "message": (
+                    "This domain is not on PhishGuard's recognized official-domain list. "
+                    "A low model score does not prove that it is legitimate."
+                ),
+            })
+
         model_prediction = "Potential Phishing" if predicted_class == -1 else "Likely Legitimate"
-        final_prediction = "Potential Phishing" if security_rule else model_prediction
+        if security_rule or predicted_class == -1:
+            final_prediction = "Potential Phishing"
+        elif recognized_official:
+            final_prediction = "Likely Legitimate"
+        else:
+            final_prediction = "Unverified Domain"
+
+        if security_rule:
+            analysis_source = "security-rule"
+        elif not recognized_official and predicted_class != -1:
+            analysis_source = "verification-policy"
+        else:
+            analysis_source = "machine-learning-model"
 
         return {
             "input_type": "url",
@@ -140,7 +183,7 @@ class URLPredictionService:
             "risk_level": risk_level,
             "model_prediction": model_prediction,
             "model_phishing_probability": round(phishing_probability * 100, 2),
-            "analysis_source": "security-rule" if security_rule else "machine-learning-model",
+            "analysis_source": analysis_source,
             "model_name": self.model_name,
             "indicators": indicators,
             "features": features,
