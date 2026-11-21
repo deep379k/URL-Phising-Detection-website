@@ -152,8 +152,13 @@ except Exception as exc:
 try:
     with (ROOT / "Phishing_model.pkl").open("rb") as file:
         legacy_model = pickle.load(file)
-except FileNotFoundError:
+    legacy_model_error = None
+except Exception as exc:
+    # The legacy notebook model may have been serialized by an older
+    # scikit-learn release. It must never prevent the primary scanners or
+    # health endpoint from starting in production.
     legacy_model = None
+    legacy_model_error = str(exc)
 
 initialize_database(app)
 
