@@ -11,7 +11,7 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  scanUrl: url => request("/api/predict/url", { method: "POST", body: JSON.stringify({ url }) }),
+  scanUrl: url => request("/api/predict/url", { method: "POST", body: JSON.stringify({ url, live_checks: true }) }),
   scanManualUrlFeatures: features => request("/api/predict/url/manual", { method: "POST", body: JSON.stringify({ features }) }),
   scanMessage: message => request("/api/predict/message", { method: "POST", body: JSON.stringify({ message }) }),
   scanEmail: email => request("/api/predict/email", { method: "POST", body: JSON.stringify({ email }) }),

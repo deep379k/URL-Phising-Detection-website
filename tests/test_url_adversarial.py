@@ -92,6 +92,19 @@ class URLAdversarialTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.get_json()["prediction"], "Likely Legitimate")
 
+    def test_official_domain_over_http_is_never_called_legitimate(self):
+        value = (
+            "http://docs.google.com/spreadsheet/viewform?"
+            "formkey=dE5rVEdSV2pBdkpSRy11V3o2eDdwbmc6MQ"
+        )
+        response = self.scan(value)
+        self.assertEqual(response.status_code, 200)
+        body = response.get_json()
+        self.assertEqual(body["prediction"], "Potential Phishing")
+        self.assertEqual(body["risk_level"], "High")
+        self.assertEqual(body["analysis_source"], "security-rule")
+        self.assertIn("HTTPS", [item["feature"] for item in body["indicators"]])
+
 
 if __name__ == "__main__":
     unittest.main()

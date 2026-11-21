@@ -295,7 +295,10 @@ def _predict_url_response():
     if url_prediction_service is None:
         return jsonify({"success": False, "error": "URL model is unavailable."}), 503
     try:
-        result = url_prediction_service.predict(payload.get("url", ""))
+        result = url_prediction_service.predict(
+            payload.get("url", ""),
+            live_checks=payload.get("live_checks") is True,
+        )
     except InvalidURL as exc:
         return jsonify({"success": False, "error": str(exc)}), 400
     except Exception:

@@ -11,6 +11,7 @@ import joblib
 import pandas as pd
 
 from url_features import FEATURE_NAMES, extract_url_features, normalize_url
+from services.url_intelligence import analyze_live_url
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,7 +110,7 @@ class URLPredictionService:
     def model_name(self) -> str:
         return str(self.metrics["selected_model"])
 
-    def predict(self, value: str) -> dict[str, object]:
+    def predict(self, value: str, live_checks: bool = False) -> dict[str, object]:
         normalized = normalize_url(value)
         features = extract_url_features(normalized)
         frame = pd.DataFrame([[features[name] for name in FEATURE_NAMES]], columns=FEATURE_NAMES)
@@ -125,6 +126,7 @@ class URLPredictionService:
         critical_rule = features["UsingIP"] == -1 and (
             features["HTTPS"] == -1 or features["NonStdPort"] == -1
         )
+        insecure_transport_rule = features["HTTPS"] == -1
         deceptive_hostname_rule = features["HTTPSDomainURL"] == -1
         strong_signal_names = (
             "UsingIP", "ShortURL", "Symbol@", "Redirecting//", "NonStdPort",
@@ -136,6 +138,7 @@ class URLPredictionService:
         recognized_official = is_recognized_official_domain(normalized)
         security_rule = (
             critical_rule
+            or insecure_transport_rule
             or deceptive_hostname_rule
             or combined_signal_rule
             or impersonated_brand is not None
@@ -188,7 +191,7 @@ class URLPredictionService:
         else:
             analysis_source = "machine-learning-model"
 
-        return {
+        result = {
             "input_type": "url",
             "url": normalized,
             "prediction": final_prediction,
@@ -205,4 +208,24 @@ class URLPredictionService:
                 "purposes. Predictions may contain false positives and false negatives."
             ),
         }
+        if live_checks:
+            intelligence = analyze_live_url(normalized)
+            result["live_intelligence"] = intelligence
+            for check in intelligence["checks"]:
+                if check["status"] in {"failed", "warning"}:
+                    result["indicators"].append({
+                        "feature": f"Live{str(check['name']).replace(' ', '')}",
+                        "message": str(check["detail"]),
+                    })
+            if intelligence["malicious"]:
+                result["prediction"] = "Potential Phishing"
+                result["risk_level"] = "High"
+                result["analysis_source"] = "hybrid-live-intelligence"
+            elif intelligence["caution"] and result["prediction"] == "Likely Legitimate":
+                result["prediction"] = "Unverified Domain"
+                result["risk_level"] = "Medium"
+                result["analysis_source"] = "hybrid-live-intelligence"
+        else:
+            result["live_intelligence"] = {"checks": [], "skipped": True}
+        return result
 

@@ -50,12 +50,12 @@ export default function UrlScanner() {
   const unverified = result?.prediction === "Unverified Domain";
   const caution = phishing || unverified;
   return <main className="scanner-page url-scanner section-wrap">
-    <div className="page-heading"><p className="eyebrow">URL INTELLIGENCE</p><h1>Inspect a suspicious link</h1><p>Enter a complete URL or domain. PhishGuard analyzes its structure without visiting the page.</p></div>
+    <div className="page-heading"><p className="eyebrow">URL INTELLIGENCE</p><h1>Inspect a suspicious link</h1><p>Analyze URL structure, DNS, TLS, domain registration, and configured reputation providers.</p></div>
     <section className="scanner-card">
       <form onSubmit={submit}>
         <label htmlFor="url">URL or domain</label>
         <div className="url-input-wrap"><LockKeyhole size={19} /><input id="url" value={url} onChange={event => setUrl(event.target.value)} placeholder="https://example.com/account" autoComplete="off" maxLength="2048" required /><button disabled={loading}>{loading ? <LoaderCircle className="spin" /> : <ScanSearch />}<span>{loading ? "Analyzing" : "Analyze URL"}</span></button></div>
-        <p className="input-help">The destination is not opened or downloaded during this analysis.</p>
+        <p className="input-help">Page content is not downloaded in the web process. Network metadata and configured reputation providers are checked.</p>
       </form>
       {error && <div className="form-error"><AlertTriangle /> <div><strong>Unable to analyze this URL</strong><span>{error}</span></div></div>}
     </section>
@@ -69,6 +69,7 @@ export default function UrlScanner() {
       <div className="result-meta"><div><span>Analysis source</span><strong>{result.analysis_source === "security-rule" ? "Security safeguard" : result.analysis_source === "verification-policy" ? "Domain verification policy" : result.model_name}</strong></div><div><span>Model phishing probability</span><strong>{result.model_phishing_probability}%</strong></div><div><span>Stored in history</span><strong>{result.stored ? "Yes" : "Database not configured"}</strong></div></div>
       <div className="analyzed-url"><ExternalLink size={16} /><span>{result.url}</span></div>
       <div className="indicator-section"><h3>Detected indicators</h3>{result.indicators.length ? <div className="indicator-list">{result.indicators.map(item => <div key={item.feature}><AlertTriangle /><span>{item.message}</span><ChevronRight /></div>)}</div> : <div className="no-indicators"><CheckCircle2 /> No negative structural indicators were detected.</div>}</div>
+      {result.live_intelligence?.checks?.length > 0 && <div className="indicator-section"><h3>Live intelligence checks</h3><div className="intelligence-grid">{result.live_intelligence.checks.map(check => <article key={check.name} className={`intelligence-check ${check.status}`}><span>{check.status === "passed" ? <CheckCircle2 /> : <AlertTriangle />}</span><div><strong>{check.name}</strong><small>{check.detail}</small></div><b>{check.status.replaceAll("_", " ")}</b></article>)}</div></div>}
       <p className="disclaimer">{result.disclaimer} Always verify sensitive requests through official channels.</p>
     </section>}
 
