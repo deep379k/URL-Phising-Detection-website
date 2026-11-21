@@ -1,0 +1,11 @@
+.vercel
+.env
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+source/
+frontend/node_modules/
+frontend/dist/
+datasets/

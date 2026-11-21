@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard AI - Admin Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="{{ url_for('static', filename='js/admin.js') }}" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/"><span class="brand-mark">P</span><span>PhishGuard <b>AI</b></span></a>
+    <nav aria-label="Admin navigation">
+      <a class="active" href="/admin">Overview</a>
+      <a href="/inspect">URL Scanner</a>
+      <a href="/api/model-metrics">Model Metrics</a>
+    </nav>
+    <div class="sidebar-status"><span id="status-dot"></span><span id="status-text">Checking services</span></div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div><p class="eyebrow">ADMIN ANALYTICS</p><h1>Threat intelligence overview</h1></div>
+      <button id="refresh-button" type="button">Refresh data</button>
+    </header>
+
+    <section id="database-alert" class="alert" hidden>
+      <strong>MySQL is not configured.</strong>
+      <span>Copy <code>.env.example</code> to <code>.env</code> and add your database credentials to activate scan history.</span>
+    </section>
+
+    <section class="metric-grid" aria-label="Scan metrics">
+      <article><span>Total scans</span><strong id="total-scans">—</strong><small>All recorded channels</small></article>
+      <article><span>Potential phishing</span><strong id="phishing-scans">—</strong><small>Flagged by model or safeguards</small></article>
+      <article><span>High-risk scans</span><strong id="high-risk">—</strong><small>Immediate verification recommended</small></article>
+      <article><span>Phishing rate</span><strong id="phishing-rate">—</strong><small>Share of stored scans</small></article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel chart-panel">
+        <div class="panel-heading"><div><p class="eyebrow">30-DAY ACTIVITY</p><h2>Scan volume and phishing trends</h2></div></div>
+        <div class="chart-wrap"><canvas id="trend-chart" aria-label="Scan trend chart"></canvas></div>
+        <div id="chart-empty" class="empty" hidden>No scans have been recorded yet.</div>
+      </article>
+
+      <article class="panel model-panel">
+        <p class="eyebrow">ACTIVE MODEL</p>
+        <h2 id="model-name">Loading…</h2>
+        <dl>
+          <div><dt>Phishing recall</dt><dd id="model-recall">—</dd></div>
+          <div><dt>ROC-AUC</dt><dd id="model-auc">—</dd></div>
+          <div><dt>Features</dt><dd id="model-features">—</dd></div>
+        </dl>
+        <p class="model-note">Metrics come from the stored evaluation artifact, never hardcoded dashboard values.</p>
+      </article>
+    </section>
+
+    <section class="panel recent-panel">
+      <div class="panel-heading"><div><p class="eyebrow">LATEST ACTIVITY</p><h2>Recent scans</h2></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Input</th><th>Prediction</th><th>Risk</th><th>Model</th><th>Time</th></tr></thead>
+          <tbody id="recent-scans"><tr><td colspan="5" class="empty">Loading scan history…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

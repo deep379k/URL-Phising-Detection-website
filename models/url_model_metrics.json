@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-11-20T13:45:48.761092+00:00",
+  "dataset": {
+    "source": "phishing.csv",
+    "original_rows": 11054,
+    "usable_unique_rows": 637,
+    "features": [
+      "UsingIP",
+      "LongURL",
+      "ShortURL",
+      "Symbol@",
+      "Redirecting//",
+      "PrefixSuffix-",
+      "SubDomains",
+      "HTTPS",
+      "NonStdPort",
+      "HTTPSDomainURL"
+    ],
+    "class_distribution": {
+      "-1": 327,
+      "1": 310
+    },
+    "train_rows": 509,
+    "test_rows": 128
+  },
+  "selected_model": "Logistic Regression",
+  "selection_rule": "highest mean cross-validation macro recall, then macro F1",
+  "cross_validation": {
+    "Logistic Regression": {
+      "accuracy": 0.789691,
+      "precision": 0.793536,
+      "recall": 0.788102,
+      "f1": 0.788126
+    },
+    "Decision Tree": {
+      "accuracy": 0.742535,
+      "precision": 0.748469,
+      "recall": 0.743324,
+      "f1": 0.741166
+    },
+    "Random Forest": {
+      "accuracy": 0.775888,
+      "precision": 0.77781,
+      "recall": 0.775297,
+      "f1": 0.774986
+    },
+    "Gradient Boosting": {
+      "accuracy": 0.777868,
+      "precision": 0.780754,
+      "recall": 0.776993,
+      "f1": 0.776763
+    }
+  },
+  "holdout": {
+    "accuracy": 0.695312,
+    "precision_macro": 0.698491,
+    "recall_macro": 0.692815,
+    "f1_macro": 0.692137,
+    "phishing_recall": 0.772727,
+    "roc_auc": 0.783724,
+    "pr_auc": 0.753452,
+    "confusion_matrix_labels": [
+      -1,
+      1
+    ],
+    "confusion_matrix": [
+      [
+        51,
+        15
+      ],
+      [
+        24,
+        38
+      ]
+    ]
+  }
+}

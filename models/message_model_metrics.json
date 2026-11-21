@@ -1,0 +1,157 @@
+{
+  "generated_at": "2026-11-21T04:44:27.758058+00:00",
+  "dataset": {
+    "name": "UCI SMS Spam Collection",
+    "doi": "10.24432/C5CC84",
+    "license": "CC BY 4.0",
+    "original_rows": 5574,
+    "duplicate_rows_removed": 403,
+    "usable_rows": 5171,
+    "class_distribution": {
+      "ham": 4518,
+      "spam": 653
+    },
+    "train_rows": 4136,
+    "test_rows": 1035
+  },
+  "selected_model": "Logistic Regression",
+  "selection_rule": "highest mean cross-validation macro recall, then macro F1",
+  "cross_validation": {
+    "Multinomial Naive Bayes": {
+      "accuracy": 0.976307,
+      "precision": 0.985848,
+      "recall": 0.90694,
+      "f1": 0.941303,
+      "roc_auc": 0.984354,
+      "pr_auc": 0.963443
+    },
+    "Logistic Regression": {
+      "accuracy": 0.983802,
+      "precision": 0.961067,
+      "recall": 0.966145,
+      "f1": 0.963535,
+      "roc_auc": 0.991264,
+      "pr_auc": 0.975744
+    },
+    "Linear SVM": {
+      "accuracy": 0.987669,
+      "precision": 0.979359,
+      "recall": 0.964242,
+      "f1": 0.971551,
+      "roc_auc": 0.991464,
+      "pr_auc": 0.978445
+    }
+  },
+  "holdout": {
+    "accuracy": 0.97971,
+    "precision_macro": 0.955461,
+    "recall_macro": 0.952484,
+    "f1_macro": 0.953966,
+    "spam_precision": 0.923077,
+    "spam_recall": 0.916031,
+    "spam_f1": 0.91954,
+    "roc_auc": 0.98906,
+    "pr_auc": 0.961832,
+    "confusion_matrix_labels": [
+      "ham",
+      "spam"
+    ],
+    "confusion_matrix": [
+      [
+        894,
+        10
+      ],
+      [
+        11,
+        120
+      ]
+    ]
+  },
+  "important_spam_terms": [
+    {
+      "term": "call",
+      "weight": 5.605297
+    },
+    {
+      "term": "txt",
+      "weight": 4.659543
+    },
+    {
+      "term": "text",
+      "weight": 4.106792
+    },
+    {
+      "term": "free",
+      "weight": 3.90453
+    },
+    {
+      "term": "reply",
+      "weight": 3.530661
+    },
+    {
+      "term": "to",
+      "weight": 3.373587
+    },
+    {
+      "term": "mobile",
+      "weight": 3.208434
+    },
+    {
+      "term": "your",
+      "weight": 3.140821
+    },
+    {
+      "term": "www",
+      "weight": 3.132651
+    },
+    {
+      "term": "stop",
+      "weight": 3.008637
+    },
+    {
+      "term": "uk",
+      "weight": 2.907628
+    },
+    {
+      "term": "claim",
+      "weight": 2.766033
+    },
+    {
+      "term": "com",
+      "weight": 2.622924
+    },
+    {
+      "term": "from",
+      "weight": 2.613956
+    },
+    {
+      "term": "150p",
+      "weight": 2.547114
+    },
+    {
+      "term": "now",
+      "weight": 2.392986
+    },
+    {
+      "term": "for",
+      "weight": 2.385909
+    },
+    {
+      "term": "chat",
+      "weight": 2.376957
+    },
+    {
+      "term": "new",
+      "weight": 2.374402
+    },
+    {
+      "term": "50",
+      "weight": 2.372676
+    }
+  ],
+  "limitations": [
+    "The source labels are ham and spam, not phishing or financial fraud.",
+    "The corpus is primarily English and does not validate Hindi or Hinglish performance.",
+    "Scam themes returned by the application are rule-based indicators, not trained categories."
+  ]
+}

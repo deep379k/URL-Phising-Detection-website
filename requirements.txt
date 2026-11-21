@@ -1,6 +1,12 @@
 flask
+Flask-Limiter>=4.1,<5
+Flask-SQLAlchemy
+gunicorn>=23,<24
+joblib
 numpy
 pandas
+PyMySQL
+python-dotenv
 scikit-learn
 matplotlib
 seaborn
