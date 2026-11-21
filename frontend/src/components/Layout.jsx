@@ -29,7 +29,7 @@ export default function Layout() {
       <div id="main-content" className="route-stage" key={location.pathname}><Outlet /></div>
       <footer>
         <div className="brand"><span className="brand-icon"><ShieldCheck size={19} /></span><span className="brand-name"><strong>PHISH</strong><span>GUARD</span><em>AI</em></span></div>
-        <p>Machine-learning risk analysis for informational purposes. Always verify sensitive requests through official channels.</p>
+        <div className="creator-signature"><strong>Designed & built by Deepanshu</strong><span>Machine-learning risk analysis for informational purposes. Always verify sensitive requests through official channels.</span></div>
       </footer>
     </div>
   );

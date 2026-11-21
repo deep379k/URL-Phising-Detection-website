@@ -1,4 +1,5 @@
-import { CheckCircle2, Link2, Mail, MessageSquareText, ScanSearch, ShieldCheck, Sparkles } from "lucide-react";
+import { AtSign, CheckCircle2, Link2, Mail, MessageSquareText, ScanSearch, Send, ShieldCheck, Sparkles } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const channels = [
@@ -8,6 +9,15 @@ const channels = [
 ];
 
 export default function Landing() {
+  const [contact, setContact] = useState({ name: "", email: "", subject: "", message: "" });
+
+  function openGmail(event) {
+    event.preventDefault();
+    const subject = encodeURIComponent(contact.subject || `PhishGuard AI enquiry from ${contact.name}`);
+    const body = encodeURIComponent(`Name: ${contact.name}\nEmail: ${contact.email}\n\n${contact.message}`);
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=deepanshu739k@gmail.com&su=${subject}&body=${body}`, "_blank", "noopener,noreferrer");
+  }
+
   return <main>
     <section className="hero section-wrap">
       <div className="hero-copy">
@@ -43,6 +53,13 @@ export default function Landing() {
           </div>
           <Link className="button primary" to="/scanner/url"><ScanSearch size={18} /> Open URL scanner</Link>
         </div>
+      </div>
+    </section>
+
+    <section className="contact-band section-block" id="contact">
+      <div className="contact-layout section-wrap">
+        <div className="contact-copy"><p className="eyebrow">CONTACT THE CREATOR</p><h2>Have feedback or want to collaborate?</h2><p>Send a question, report an issue, or share an idea for PhishGuard AI. Your message opens securely in Gmail and is sent from your own account.</p><a className="contact-email" href="mailto:deepanshu739k@gmail.com"><span><AtSign /></span><div><small>EMAIL DEEPANSHU</small><strong>deepanshu739k@gmail.com</strong></div></a></div>
+        <form className="contact-form" onSubmit={openGmail}><div className="contact-row"><label>Your name<input value={contact.name} onChange={event => setContact(value => ({ ...value, name: event.target.value }))} placeholder="Enter your name" required /></label><label>Your email<input type="email" value={contact.email} onChange={event => setContact(value => ({ ...value, email: event.target.value }))} placeholder="you@example.com" required /></label></div><label>Subject<input value={contact.subject} onChange={event => setContact(value => ({ ...value, subject: event.target.value }))} placeholder="What would you like to discuss?" required /></label><label>Message<textarea value={contact.message} onChange={event => setContact(value => ({ ...value, message: event.target.value }))} placeholder="Write your message here..." rows="6" maxLength="3000" required /></label><button className="button primary" type="submit"><Send /> Continue in Gmail</button><p>No message content is stored by PhishGuard AI.</p></form>
       </div>
     </section>
   </main>;
