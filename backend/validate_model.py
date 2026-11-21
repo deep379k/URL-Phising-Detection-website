@@ -3,13 +3,16 @@
 import pickle
 import numpy as np
 import pandas as pd
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 # Load model
-with open('Phishing_model.pkl', 'rb') as f:
+with (PROJECT_ROOT / 'Phishing_model.pkl').open('rb') as f:
     model = pickle.load(f)
 
 # Load training data
-df = pd.read_csv("phishing.csv")
+df = pd.read_csv(PROJECT_ROOT / "phishing.csv")
 if 'Index' in df.columns:
     df = df.drop(['Index'], axis=1)
 df.drop_duplicates(inplace=True)

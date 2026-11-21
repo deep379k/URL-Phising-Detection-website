@@ -14,7 +14,7 @@ from url_features import FEATURE_NAMES, extract_url_features, normalize_url
 from services.url_intelligence import analyze_live_url
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATH = ROOT / "models" / "url_phishing_pipeline.joblib"
 METRICS_PATH = ROOT / "models" / "url_model_metrics.json"
 

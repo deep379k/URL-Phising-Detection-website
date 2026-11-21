@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Extract real sample features from phishing.csv."""
 import pandas as pd
+from pathlib import Path
 
-df = pd.read_csv("phishing.csv")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+df = pd.read_csv(PROJECT_ROOT / "phishing.csv")
 if 'Index' in df.columns:
     df = df.drop(['Index'], axis=1)
 df.drop_duplicates(inplace=True)

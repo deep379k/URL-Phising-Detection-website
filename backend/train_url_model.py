@@ -27,7 +27,7 @@ from sklearn.tree import DecisionTreeClassifier
 from url_features import FEATURE_NAMES
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 DATASET_PATH = ROOT / "phishing.csv"
 MODELS_DIR = ROOT / "models"
 MODEL_PATH = MODELS_DIR / "url_phishing_pipeline.joblib"

@@ -6,13 +6,16 @@ This eliminates InconsistentVersionWarning from version mismatches.
 import numpy as np
 import pandas as pd
 import pickle
+from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingClassifier
 from imblearn.over_sampling import SMOTE
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 print("Loading phishing.csv...")
-df = pd.read_csv("phishing.csv")
+df = pd.read_csv(PROJECT_ROOT / "phishing.csv")
 print(f"Loaded: {df.shape}")
 
 # Drop Index column
@@ -69,6 +72,7 @@ print(f"Model accuracy on test set: {score:.4f}")
 
 # Save model
 print("Saving Phishing_model.pkl...")
-pickle.dump(gbc, open('Phishing_model.pkl', 'wb'))
+with (PROJECT_ROOT / 'Phishing_model.pkl').open('wb') as model_file:
+    pickle.dump(gbc, model_file)
 print("✓ Model saved successfully!")
-print("Done. You can now run 'python app.py' without sklearn version warnings.")
+print("Done. You can now run 'python backend/app.py' without sklearn version warnings.")

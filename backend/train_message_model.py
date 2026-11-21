@@ -26,7 +26,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 DATASET_PATH = ROOT / "datasets" / "raw" / "sms" / "uci" / "SMSSpamCollection"
 MODELS_DIR = ROOT / "models"
 MODEL_PATH = MODELS_DIR / "message_spam_pipeline.joblib"

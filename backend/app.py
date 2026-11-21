@@ -88,10 +88,16 @@ from services.message_prediction import InvalidMessage, MessagePredictionService
 from services.url_prediction import URLPredictionService
 from url_features import InvalidURL
 
-load_dotenv()
-ROOT = Path(__file__).resolve().parent
-FRONTEND_DIST = ROOT / "frontend" / "dist"
-app = Flask(__name__, static_folder=str(FRONTEND_DIST), static_url_path="")
+BACKEND_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = BACKEND_ROOT.parent
+load_dotenv(PROJECT_ROOT / ".env")
+FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
+app = Flask(
+    __name__,
+    static_folder=str(FRONTEND_DIST),
+    static_url_path="",
+    template_folder=str(PROJECT_ROOT / "templates"),
+)
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
 app.config.update(
     SECRET_KEY=os.getenv("SECRET_KEY") or secrets.token_hex(32),
@@ -150,7 +156,7 @@ except Exception as exc:
 
 # Keep the original model available only for the legacy manual feature form.
 try:
-    with (ROOT / "Phishing_model.pkl").open("rb") as file:
+    with (PROJECT_ROOT / "Phishing_model.pkl").open("rb") as file:
         legacy_model = pickle.load(file)
     legacy_model_error = None
 except Exception as exc:

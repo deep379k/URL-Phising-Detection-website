@@ -53,7 +53,7 @@ The model is trained on a phishing website dataset containing:
 
 1. **Start the web application**:
    ```bash
-   python app.py
+   python backend/app.py
    ```
 
 2. **Open your browser** and navigate to `http://localhost:5000`
@@ -85,9 +85,13 @@ The model is trained on a phishing website dataset containing:
 Run the included test scripts to validate the model:
 
 ```bash
-python test_phishing.py
-python test_url_analyzer.py
-python test_all_predictions.py
+python backend/test_phishing.py
+python backend/test_url_analyzer.py
+python backend/test_all_predictions.py
+
+# Complete automated suite
+cd backend
+python -m unittest discover -s tests -v
 ```
 
 ## 📈 Model Performance

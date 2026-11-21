@@ -11,7 +11,7 @@ from pathlib import Path
 import joblib
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATH = ROOT / "models" / "message_spam_pipeline.joblib"
 METRICS_PATH = ROOT / "models" / "message_model_metrics.json"
 URL_PATTERN = re.compile(r"(?i)\b(?:https?://|www\.)[^\s<>]+")
