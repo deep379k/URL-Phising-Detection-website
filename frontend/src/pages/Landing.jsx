@@ -18,7 +18,7 @@ export default function Landing() {
     window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=deepanshu739k@gmail.com&su=${subject}&body=${body}`, "_blank", "noopener,noreferrer");
   }
 
-  return <main>
+  return <main className="landing-page">
     <section className="hero section-wrap">
       <div className="hero-copy">
         <div className="pill"><Sparkles size={14} /> Explainable phishing analysis</div>
