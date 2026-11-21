@@ -23,6 +23,15 @@ class URLFeatureTests(unittest.TestCase):
         with self.assertRaises(InvalidURL):
             extract_url_features("not a valid url")
 
+    def test_incomplete_single_word_is_invalid(self):
+        with self.assertRaisesRegex(InvalidURL, "complete domain"):
+            extract_url_features("hvbdkb")
+
+    def test_invalid_hostname_characters(self):
+        for value in ("bad_domain.com", "-bad.com", "bad-.com", "bad..com", "example.c"):
+            with self.subTest(value=value), self.assertRaises(InvalidURL):
+                extract_url_features(value)
+
 
 class URLAPITests(unittest.TestCase):
     def setUp(self):
@@ -86,6 +95,13 @@ class URLAPITests(unittest.TestCase):
         response = self.client.post("/api/predict/url", json={"url": "not a valid url"})
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response.get_json()["success"])
+
+    def test_single_word_response_is_invalid_not_legitimate(self):
+        response = self.client.post("/api/predict/url", json={"url": "hvbdkb"})
+        body = response.get_json()
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(body["success"])
+        self.assertIn("complete domain", body["error"])
 
     def test_manual_feature_prediction(self):
         names = [

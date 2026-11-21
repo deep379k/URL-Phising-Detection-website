@@ -39,6 +39,34 @@ class InvalidURL(ValueError):
     """Raised when a submitted URL cannot be safely analyzed."""
 
 
+def _validate_hostname(hostname: str) -> None:
+    """Validate an internet hostname without performing a network request."""
+    hostname = hostname.rstrip(".")
+    if _is_ip(hostname):
+        return
+
+    try:
+        ascii_hostname = hostname.encode("idna").decode("ascii")
+    except UnicodeError as exc:
+        raise InvalidURL("The hostname contains invalid characters.") from exc
+
+    if len(ascii_hostname) > 253:
+        raise InvalidURL("The hostname is too long.")
+    if "." not in ascii_hostname:
+        raise InvalidURL("Enter a complete domain such as example.com, not a single word.")
+
+    labels = ascii_hostname.split(".")
+    if any(not label for label in labels):
+        raise InvalidURL("The hostname contains an empty domain label.")
+    label_pattern = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$", re.IGNORECASE)
+    if any(not label_pattern.fullmatch(label) for label in labels):
+        raise InvalidURL("The hostname contains an invalid domain label.")
+
+    suffix = labels[-1]
+    if not (re.fullmatch(r"[a-z]{2,63}", suffix, re.IGNORECASE) or suffix.lower().startswith("xn--")):
+        raise InvalidURL("Enter a domain with a valid public suffix, such as .com or .in.")
+
+
 def normalize_url(value: str) -> str:
     """Return a parseable HTTP(S) URL without making a network request."""
     if not isinstance(value, str):
@@ -60,6 +88,8 @@ def normalize_url(value: str) -> str:
         raise InvalidURL("Enter a URL with a valid hostname.")
     if " " in parsed.netloc:
         raise InvalidURL("The hostname cannot contain spaces.")
+
+    _validate_hostname(parsed.hostname)
 
     try:
         _ = parsed.port

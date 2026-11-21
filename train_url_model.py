@@ -14,12 +14,13 @@ from sklearn.metrics import (
     accuracy_score,
     average_precision_score,
     confusion_matrix,
+    fbeta_score,
     f1_score,
     precision_score,
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_validate, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
@@ -110,9 +111,49 @@ def train() -> dict[str, object]:
         key=lambda name: (comparison[name]["recall"], comparison[name]["f1"]),
     )
     selected = fitted[selected_name]
-    prediction = selected.predict(test_x)
+
+    # Learn the operating threshold only from out-of-fold training predictions.
+    # F2 weights phishing recall more heavily than precision because missed
+    # phishing attempts are the costliest error. The untouched holdout below
+    # remains an honest final evaluation.
+    oof_probability_matrix = cross_val_predict(
+        Pipeline([("classifier", _models()[selected_name])]),
+        train_x,
+        train_y,
+        cv=cross_validation,
+        method="predict_proba",
+        n_jobs=-1,
+    )
+    class_order = list(selected.classes_)
+    phishing_index = class_order.index(-1)
+    oof_phishing_probability = oof_probability_matrix[:, phishing_index]
+    oof_truth = (train_y == -1).astype(int)
+    threshold_candidates = [value / 100 for value in range(20, 81)]
+    eligible_thresholds = [
+        threshold
+        for threshold in threshold_candidates
+        if precision_score(
+            oof_truth,
+            oof_phishing_probability >= threshold,
+            zero_division=0,
+        ) >= 0.75
+    ]
+    decision_threshold = max(
+        eligible_thresholds or threshold_candidates,
+        key=lambda threshold: (
+            fbeta_score(oof_truth, oof_phishing_probability >= threshold, beta=2),
+            recall_score(oof_truth, oof_phishing_probability >= threshold),
+            precision_score(oof_truth, oof_phishing_probability >= threshold, zero_division=0),
+        ),
+    )
+
     phishing_probability = _phishing_scores(selected, test_x)
     binary_truth = (test_y == -1).astype(int)
+    phishing_prediction = phishing_probability >= decision_threshold
+    prediction = pd.Series(
+        [-1 if is_phishing else 1 for is_phishing in phishing_prediction],
+        index=test_y.index,
+    )
 
     metrics = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -127,13 +168,17 @@ def train() -> dict[str, object]:
         },
         "selected_model": selected_name,
         "selection_rule": "highest mean cross-validation macro recall, then macro F1",
+        "decision_threshold": round(float(decision_threshold), 2),
+        "threshold_selection": (
+            "maximum out-of-fold phishing F2 on training data with at least 0.75 precision"
+        ),
         "cross_validation": comparison,
         "holdout": {
             "accuracy": round(float(accuracy_score(test_y, prediction)), 6),
             "precision_macro": round(float(precision_score(test_y, prediction, average="macro")), 6),
             "recall_macro": round(float(recall_score(test_y, prediction, average="macro")), 6),
             "f1_macro": round(float(f1_score(test_y, prediction, average="macro")), 6),
-            "phishing_recall": round(float(recall_score(binary_truth, prediction == -1)), 6),
+            "phishing_recall": round(float(recall_score(binary_truth, phishing_prediction)), 6),
             "roc_auc": round(float(roc_auc_score(binary_truth, phishing_probability)), 6),
             "pr_auc": round(float(average_precision_score(binary_truth, phishing_probability)), 6),
             "confusion_matrix_labels": [-1, 1],

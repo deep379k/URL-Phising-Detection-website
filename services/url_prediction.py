@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -81,9 +82,20 @@ def detect_brand_lookalike(url: str) -> str | None:
             continue
         for label in labels:
             normalized_label = label.translate(str.maketrans({"0": "o", "1": "l", "3": "e", "5": "s"}))
+            # Catch stretched spellings such as gooooooogle and paypaall.
+            # Compare collapsed character runs on both sides so legitimate
+            # repeated letters in the real brand (for example Google's "oo")
+            # do not create a mismatch.
+            collapsed_label = re.sub(r"(.)\1+", r"\1", normalized_label)
+            collapsed_brand = re.sub(r"(.)\1+", r"\1", brand)
+            repeated_character_lookalike = (
+                normalized_label != brand
+                and collapsed_label == collapsed_brand
+                and len(normalized_label) <= len(brand) + 12
+            )
             if normalized_label == brand or (
                 len(normalized_label) >= 4 and _edit_distance(normalized_label, brand) == 1
-            ):
+            ) or repeated_character_lookalike:
                 return brand
     return None
 
@@ -101,11 +113,11 @@ class URLPredictionService:
         normalized = normalize_url(value)
         features = extract_url_features(normalized)
         frame = pd.DataFrame([[features[name] for name in FEATURE_NAMES]], columns=FEATURE_NAMES)
-        predicted_class = int(self.model.predict(frame)[0])
-
         classes = list(self.model.classes_)
         phishing_index = classes.index(-1)
         phishing_probability = float(self.model.predict_proba(frame)[0][phishing_index])
+        decision_threshold = float(self.metrics.get("decision_threshold", 0.5))
+        predicted_class = -1 if phishing_probability >= decision_threshold else 1
 
         # Some security signals are rare or contradictory in the legacy dataset.
         # Report them as an explicit deterministic safeguard, not as fabricated
@@ -183,6 +195,7 @@ class URLPredictionService:
             "risk_level": risk_level,
             "model_prediction": model_prediction,
             "model_phishing_probability": round(phishing_probability * 100, 2),
+            "model_decision_threshold": round(decision_threshold * 100, 2),
             "analysis_source": analysis_source,
             "model_name": self.model_name,
             "indicators": indicators,

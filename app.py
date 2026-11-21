@@ -317,7 +317,7 @@ def _predict_url_response():
 
 
 @app.post("/api/predict/url")
-@limiter.limit("30/minute")
+@limiter.limit("120/minute")
 def predict_url():
     return _predict_url_response()
 

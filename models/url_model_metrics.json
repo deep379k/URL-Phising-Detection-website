@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T13:45:48.761092+00:00",
+  "generated_at": "2026-11-21T12:08:39.725172+00:00",
   "dataset": {
     "source": "phishing.csv",
     "original_rows": 11054,
@@ -25,6 +25,8 @@
   },
   "selected_model": "Logistic Regression",
   "selection_rule": "highest mean cross-validation macro recall, then macro F1",
+  "decision_threshold": 0.46,
+  "threshold_selection": "maximum out-of-fold phishing F2 on training data with at least 0.75 precision",
   "cross_validation": {
     "Logistic Regression": {
       "accuracy": 0.789691,
@@ -52,11 +54,11 @@
     }
   },
   "holdout": {
-    "accuracy": 0.695312,
-    "precision_macro": 0.698491,
-    "recall_macro": 0.692815,
-    "f1_macro": 0.692137,
-    "phishing_recall": 0.772727,
+    "accuracy": 0.710938,
+    "precision_macro": 0.722485,
+    "recall_macro": 0.706989,
+    "f1_macro": 0.704425,
+    "phishing_recall": 0.833333,
     "roc_auc": 0.783724,
     "pr_auc": 0.753452,
     "confusion_matrix_labels": [
@@ -65,12 +67,12 @@
     ],
     "confusion_matrix": [
       [
-        51,
-        15
+        55,
+        11
       ],
       [
-        24,
-        38
+        26,
+        36
       ]
     ]
   }
